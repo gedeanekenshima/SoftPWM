@@ -1,6 +1,7 @@
 /*
 || @author         Paul Stoffregen (paul at pjrc dot com)
 || @contribution   Brett Hagman <bhagman@wiring.org.co>
+|| @contribution   Daniel Sousa <daniel_rsousa@hotmail.com> and Gedeane Kenshima <gedeanegomes@yahoo.com.br>
 || @url            http://wiring.org.co/
 ||
 || @description
@@ -27,11 +28,28 @@
 #define USE_TIMER4_HS // Teensy 2.0 lacks timer2, but has high speed timer4 :-)
 #elif defined(__arm__) && defined(TEENSYDUINO)
 #define USE_INTERVALTIMER  // Teensy 3.x has special interval timers :-)
+
+#if defined(__AVR_ATtinyX41__) || defined(__AVR_ATtiny441__) || defined(__AVR_ATtiny841__) // GEDEANINHA board (ATtiny841)
+#define USE_GEDEANINHA // ATtiny841 8 MHz
+
 #else
 #define USE_TIMER2
 #endif
 
 // for each timer, these macros define how to actually use it
+
+#if defined(USE_GEDEANINHA) //GEDEANINHA				
+#define SOFTPWM_TIMER_INTERRUPT    TIMER2_COMPA_vect
+#define SOFTPWM_TIMER_SET(val)     (TCNT2 = (val))
+#define SOFTPWM_TIMER_INIT(ocr) ({\
+  TIFR2 = (1 << TOV2);    /* clear interrupt flag */ \
+  TCCR2B = (1 << CS20);   /* start timer (ck/1 prescalar) */ \
+  TCCR2A = (1 << WGM21);  /* CTC mode */ \
+  OCR2A = (ocr << 2);          /* We want to have at least 30Hz or else it gets choppy */ \
+  TIMSK2 = (1 << OCIE2A); /* enable timer2 output compare match interrupt */ \
+})
+
+
 #if defined(USE_TIMER2)
 #define SOFTPWM_TIMER_INTERRUPT    TIMER2_COMPA_vect
 #define SOFTPWM_TIMER_SET(val)     (TCNT2 = (val))
