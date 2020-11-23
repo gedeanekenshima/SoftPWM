@@ -1,6 +1,6 @@
 # SoftPWM Library #
 
-Library adapted for use with ATtiny841 compatible timer, by Daniel Rodrigues de Sousa and Gedeane Kenshima.
+Library adapted for use with ATtiny841 compatible timer. Adaptations by Daniel Rodrigues de Sousa and Gedeane Kenshima.
 
 ## What's New? ##
 
